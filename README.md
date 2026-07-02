@@ -8,6 +8,20 @@ Das Ziel ist:
 - nicht von gegnerischen Schiffen zerstört zu werden
 - nicht mit einer Insel zu kollidieren
 
+## Kommandos
+
+Es gibt folgende Funktionen (Kommandos) um das Schiff zu steuern und das Spielziel zu erreichen.
+
+
+| Kommando | Beschreibung | Beispiel |
+| --- | --- | --- |
+| `fd(distance)` | Bewegt dein Schiff um die angegebene Strecke nach vorne. | `fd(120)` |
+| `lt(angle)` | Dreht dein Schiff um den angegebenen Winkel nach links (gegen den Uhrzeigersinn). | `lt(90)` |
+| `rt(angle)` | Dreht dein Schiff um den angegebenen Winkel nach rechts (im Uhrzeigersinn). | `rt(45)` |
+| `shoot()` | Feuert eine Kanonenkugel in die aktuelle Blickrichtung deines Schiffs. | `shoot()` |
+| `collect()` | Sammelt einen Schatz ein, wenn dein Schiff nah genug am Schatz ist. | `collect()` |
+
+
 ## Tilemap-Layer
 Die Karte basiert auf einer Tilemap mit mehreren Layern:
 - `Water`
