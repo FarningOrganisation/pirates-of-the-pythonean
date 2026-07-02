@@ -20,23 +20,8 @@ def collect():
 
 
 # Schreibe hier deinen Code
-shoot()
-lt(45)
-fd(300)
-lt(25)
-shoot()
-rt(25)
-fd(100)
-rt(45)
-fd(100)
-rt(10)
-shoot()
-lt(10)
-fd(300)
-lt(40)
-fd(750)
-collect()
+#TODO
 
 
-game = PirateGame("./assets/levels/level1.tmx", COMMANDS)
+game = PirateGame("./assets/levels/level2.tmx", COMMANDS)
 arcade.run()
