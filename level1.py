@@ -21,6 +21,9 @@ def collect():
 
 # Schreibe hier deinen Code
 #TODO
+fd(500)
+lt(90)
+fd(500)
 
 
 game = PirateGame("./assets/levels/level1.tmx", COMMANDS)

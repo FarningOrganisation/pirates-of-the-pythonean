@@ -9,6 +9,7 @@ UI_FONT = ("Bradley Hand", "calibri", "arial")
 COMMAND_HUD_WIDTH = 200
 SCREEN_TITLE = "Pirates of the Pythonean"
 TILEMAP_SCALING = 0.2
+MESSAGE_MARGIN = 20
 
 
 def load_frames(file_name, frame_count):
@@ -371,7 +372,16 @@ class PirateGame(arcade.Window):
         self.scene_camera.use()
         self.scene.draw()
 
-        arcade.draw_text(self.message, 20, 20, arcade.color.DARK_BLUE, 18, font_name=UI_FONT)
+        arcade.draw_text(
+            self.message,
+            MESSAGE_MARGIN,
+            12,
+            arcade.color.DARK_BLUE,
+            18,
+            width=self.width - COMMAND_HUD_WIDTH - (MESSAGE_MARGIN * 2),
+            multiline=True,
+            font_name=UI_FONT,
+        )
 
         if self.current_action == "collect":
             self.collecting_sprite_list.draw()
@@ -425,6 +435,12 @@ class PirateGame(arcade.Window):
             return
         
         if self.current_action is None and self.command_index != -1:
+            if self.command_index >= len(self.commands):
+                if self.collected_goals >= self.goal_target:
+                    self.game_won()
+                else:
+                    self.commands_completed()
+                return
             self.start_next_action()
 
         if self.current_action:
@@ -454,6 +470,17 @@ class PirateGame(arcade.Window):
         self.player.texture = self.player_dead_texture
         self.sound_ship_destroyed.play()
         self.message = "Spiel vorbei! Drücke LEERTASTE um Dich zurückzusetzen."
+
+    def commands_completed(self):
+        self.is_game_over = True
+        self.current_action = None
+        self.message = "Alle Befehle ausgeführt, aber nicht alle Schätze eingesammelt. Drücke LEERTASTE, um neu zu starten."
+
+    def game_won(self):
+        self.is_game_over = True
+        self.current_action = None
+        self.sound_win.play()
+        self.message = "Wunderbar, alle Schätze eingesammelt. Drücke die LEERTASTE, um neu zu starten."
 
 
     def player_is_in_cannon_line(self, cannon):
@@ -552,9 +579,7 @@ class PirateGame(arcade.Window):
                     self.collected_goals += 1
                     self.collected_label.text = f"{self.collected_goals}/{self.goal_target}"
                     if self.collected_goals == self.goal_target:
-                        self.game_over = True
-                        self.sound_win.play()
-                        self.message = "Wunderbar, alle Schätze eingesammelt. Drücke die LEERTASTE, um neu zu starten."
+                        self.game_won()
                     break
                 
                 if not found_chest:
