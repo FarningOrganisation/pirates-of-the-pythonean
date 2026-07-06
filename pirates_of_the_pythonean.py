@@ -39,10 +39,11 @@ class AnimatedSprite(arcade.Sprite):
             self.texture = self.frames[self.current_index]
 
 class CannonBall(arcade.Sprite):
-    def __init__(self, scene: arcade.Scene, x, y, angle, speed=12, max_range=500):
+    def __init__(self, scene: arcade.Scene, owner: arcade.Sprite, x, y, angle, speed=12, max_range=500):
         super().__init__("assets/sprites/cannonball.png")
 
         self.scene = scene
+        self.owner = owner
         self.scene.game.sound_cannon_shoot.play()
         self.center_x = x
         self.center_y = y
@@ -105,8 +106,9 @@ class CannonBall(arcade.Sprite):
 
 
 class Cannon(arcade.Sprite):
-    def __init__(self, scene: arcade.Scene, offset, angle_offset):
+    def __init__(self, scene: arcade.Scene, owner: arcade.Sprite, offset, angle_offset):
         super().__init__("assets/sprites/cannon.png", scale=TILEMAP_SCALING*1.4)
+        self.owner = owner
         self.scene = scene
         self.offset = offset
         self.angle_offset = angle_offset
@@ -130,7 +132,7 @@ class Cannon(arcade.Sprite):
     def shoot(self):
         self.last_shot_time = time.time()
 
-        ball = CannonBall(self.scene, self.center_x, self.center_y, self.angle)
+        ball = CannonBall(self.scene, self.owner, self.center_x, self.center_y, self.angle)
         ball.center_x = self.center_x
         ball.center_y = self.center_y
         ball.angle = self.angle
@@ -151,8 +153,8 @@ class EnemyPirate(arcade.Sprite):
         self.scene = scene
         self.is_destroyed = False
 
-        self.left_cannon = Cannon(self.scene, offset=(TILEMAP_SCALING *42, TILEMAP_SCALING * 33), angle_offset=-90)
-        self.right_cannon = Cannon(self.scene, offset=(TILEMAP_SCALING * 42, TILEMAP_SCALING * -33), angle_offset=90)
+        self.left_cannon = Cannon(self.scene, self, offset=(TILEMAP_SCALING *42, TILEMAP_SCALING * 33), angle_offset=-90)
+        self.right_cannon = Cannon(self.scene, self, offset=(TILEMAP_SCALING * 42, TILEMAP_SCALING * -33), angle_offset=90)
 
         self.cannons = [
             self.left_cannon,
@@ -171,17 +173,16 @@ class EnemyPirate(arcade.Sprite):
         self.scene.game.create_explosion_effect(cannonball.center_x, cannonball.center_y)
         self.scene.game.sound_ship_destroyed.play()
         self.texture = self.scene.game.enemy_dead_texture
-        cannonball.remove_from_sprite_lists()
         self.is_destroyed = True
-        print("enemy destroyed")
+        cannonball.remove_from_sprite_lists()
     
-
 class Player(arcade.Sprite):
     def __init__(self, scene: arcade.Scene):
         super().__init__("assets/sprites/player.png", TILEMAP_SCALING)
         self.scene = scene
         self.cannon = Cannon(
             scene,
+            self,
             offset=(TILEMAP_SCALING * 100, 0),
             angle_offset=0
         )
@@ -278,7 +279,7 @@ class PirateGame(arcade.Window):
         # TREASURE HUD
         treasure_hud = gui.UIBoxLayout(vertical=False, space_between=15)
         treasure_img = gui.UIImage(texture=arcade.load_texture("./assets/sprites/chest.png"), width=45, height=45)
-        self.collected_label = text.UILabel("0/1", font_size=20, font_name=UI_FONT, text_color=arcade.color.DARK_BLUE)
+        self.collected_label = text.UILabel(f"0/{self.goal_target}", font_size=20, font_name=UI_FONT, text_color=arcade.color.DARK_BLUE)
         treasure_hud.add(treasure_img)
         treasure_hud.add(self.collected_label)
         layout.add(treasure_hud, anchor_x="right", anchor_y="top", align_x=-10, align_y=-5)
@@ -301,7 +302,6 @@ class PirateGame(arcade.Window):
 
 
     def start(self):
-        self.create_hud()
         self.is_game_over = False
         self.command_index = -1
         self.scene = arcade.Scene.from_tilemap(self.tilemap)
@@ -309,7 +309,7 @@ class PirateGame(arcade.Window):
 
 
         self.current_action = None
-        self.current_cannon_ball = None
+        self.current_cannon_ball: arcade.Sprite = None
 
         self.move_target_x = 0
         self.move_target_y = 0
@@ -318,6 +318,7 @@ class PirateGame(arcade.Window):
         self.message = "Drücke LEERTASTE, um deinen Code zu starten!"
 
         self.spawn_entities()
+        self.create_hud()
     
     def go(self):
         self.command_index = 0
@@ -366,6 +367,7 @@ class PirateGame(arcade.Window):
                     self.scene.add_sprite("Cannons", cannon)
 
         self.scene.remove_sprite_list_by_name("Entities")
+
 
     def on_draw(self):
         self.clear()
@@ -423,13 +425,12 @@ class PirateGame(arcade.Window):
             self.create_explosion_effect(b.center_x, b.center_y)
             self.game_over()
 
-        # current cannonball hits enemy?
-        if self.current_cannon_ball:
-            hit_enemies = arcade.check_for_collision_with_list(self.current_cannon_ball, self.scene["Enemies"])
-            if len(hit_enemies) > 0:
-                hit_enemies[0].destroy(self.current_cannon_ball)
-                self.current_cannon_ball = None
-                
+        # cannonball hits enemy?
+        for b in self.scene["Cannonballs"]:
+            for hit_enemy in arcade.check_for_collision_with_list(b, self.scene["Enemies"]):
+                if b.owner != hit_enemy:
+                    hit_enemy.destroy(b)
+                    break         
 
         if self.is_game_over:
             return
@@ -447,8 +448,8 @@ class PirateGame(arcade.Window):
             self.update_action()
 
 
-        # player hits island?
-        for colliding_island in arcade.check_for_collision_with_list(self.player, self.scene["Island"]):
+        # player hits island or enemies?
+        for colliding_island in arcade.check_for_collision_with_lists(self.player, (self.scene["Island"], self.scene["Enemies"])):
             distance = math.dist(self.player.position, colliding_island.position)
             if distance < 160 * TILEMAP_SCALING:
                 self.game_over()
@@ -527,7 +528,6 @@ class PirateGame(arcade.Window):
             self.current_action = "turn"
 
         elif command_name == "shoot":
-            self.player.cannon.shoot()
             self.current_action = "shoot"
             self.current_cannon_ball = self.player.cannon.shoot()
 

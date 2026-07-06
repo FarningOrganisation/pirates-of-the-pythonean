@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="128" tileheight="128" infinite="0" nextlayerid="6" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="128" tileheight="128" infinite="0" nextlayerid="6" nextobjectid="2">
  <tileset firstgid="1" source="ocean_island_tiles.tsx"/>
+ <tileset firstgid="97" source="entities.tsx"/>
  <layer id="1" name="Water" width="30" height="30">
   <data encoding="csv">
 73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,73,
@@ -103,5 +104,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="5" name="Entities"/>
+ <objectgroup id="5" name="Entities">
+  <object id="1" gid="106" x="259.168" y="3536.87" width="226" height="132"/>
+ </objectgroup>
 </map>
