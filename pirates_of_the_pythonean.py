@@ -285,7 +285,6 @@ class PirateGame(arcade.Window):
         layout.add(treasure_hud, anchor_x="right", anchor_y="top", align_x=-10, align_y=-5)
 
         # COMMAND HUD
-        print("Height: ", self.height)
         self.command_hud = gui.UIBoxLayout(vertical=True, space_between=10, width=COMMAND_HUD_WIDTH, height=self.height, align="left")
         self.command_hud.with_background(color=arcade.color.LIGHT_SKY_BLUE)
         for c in self.commands:
@@ -348,7 +347,6 @@ class PirateGame(arcade.Window):
                 self.scene.add_sprite("Player", self.player)
 
             if entity_type == "goal":
-                print("add goal")
                 self.goal_target += 1
                 goal = arcade.Sprite("assets/sprites/goal.png", scale=TILEMAP_SCALING)
                 goal.center_x = obj.center_x
@@ -509,7 +507,6 @@ class PirateGame(arcade.Window):
         self.command_hud.children[self.command_index].with_background(color=arcade.color.YELLOW)
         self.command_index += 1
         command_name = command[0]
-        print("start next action", command_name)
 
         if command_name == "fd":
             distance = command[1]
