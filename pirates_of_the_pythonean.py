@@ -270,7 +270,7 @@ class PirateGame(arcade.Window):
 
         # start playing ambience sound in a loop
         self.ambience_sound = arcade.load_sound("./assets/sounds/ambience.wav")
-        self.ambience_sound.play(volume=0.5, loop=True)
+        self.ambience_sound.play(volume=0.3, loop=True)
 
     def create_hud(self):
         self.hud = gui.UIManager()
@@ -377,7 +377,7 @@ class PirateGame(arcade.Window):
         arcade.draw_text(
             self.message,
             MESSAGE_MARGIN,
-            12,
+            35,
             arcade.color.DARK_BLUE,
             18,
             width=self.width - COMMAND_HUD_WIDTH - (MESSAGE_MARGIN * 2),
@@ -480,7 +480,7 @@ class PirateGame(arcade.Window):
     def game_won(self):
         self.is_game_over = True
         self.current_action = None
-        self.sound_win.play()
+        self.sound_win.play(volume=0.6)
         self.message = "Wunderbar, alle Schätze eingesammelt. Drücke die LEERTASTE, um neu zu starten."
 
 
@@ -575,6 +575,7 @@ class PirateGame(arcade.Window):
                 found_chest = False
                 for goal in arcade.check_for_collision_with_list(self.player, self.scene["Goals"]):
                     self.sound_chest_open.play()
+                    goal.remove_from_sprite_lists()
                     found_chest = True
                     self.collected_goals += 1
                     self.collected_label.text = f"{self.collected_goals}/{self.goal_target}"
