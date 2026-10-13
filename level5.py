@@ -22,5 +22,5 @@ def collect():
 # Schreibe hier deinen Code
 #TODO
 
-game = PirateGame("./assets/levels/level5.tmx", COMMANDS)
+game = PirateGame("./assets/levels/level5.tmx", COMMANDS, True)
 arcade.run()

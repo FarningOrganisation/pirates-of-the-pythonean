@@ -197,7 +197,8 @@ class Player(arcade.Sprite):
 # -----------------------------
 
 class PirateGame(arcade.Window):
-    def __init__(self, level, commands):
+    def __init__(self, level, commands, show_grid=False):
+        self.show_grid = show_grid
         self.level = level
         self.commands = commands
         # load tilemap to set the size
@@ -371,6 +372,17 @@ class PirateGame(arcade.Window):
         self.clear()
         self.scene_camera.use()
         self.scene.draw()
+
+        if self.show_grid:
+            GRID_SIZE = 100
+            num_rows = int((self.height // GRID_SIZE) + 1)
+            num_cols = int((self.width // GRID_SIZE) + 1)
+
+            for row in range(num_rows):
+                arcade.draw_line(0, GRID_SIZE * row, self.width, GRID_SIZE*row, (100, 100, 255, 100))
+
+            for col in range(num_cols):
+                arcade.draw_line(GRID_SIZE * col, 0, GRID_SIZE * col, self.height, (100, 100, 255, 100))
 
         arcade.draw_text(
             self.message,
