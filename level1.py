@@ -19,8 +19,32 @@ def collect():
     COMMANDS.append(("collect",))
 
 
+"""
+fd(100)      - nach vorne gehen
+rt(90)       - nach rechts drehen
+lt(90)       - nach links drehen
+collect()    - Schatz aufsammeln
+"""
+
 # Schreibe hier deinen Code
-#TODO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 game = PirateGame("./assets/levels/level1.tmx", COMMANDS, True)
